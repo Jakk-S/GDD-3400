@@ -51,6 +51,8 @@ namespace GDD3400.Project01
         private int _sheepSafeCount = 0;
         private float _levelTimer = 0f;
 
+        private bool _levelComplete = false;
+
         
         private void Awake()
         {
@@ -134,6 +136,11 @@ namespace GDD3400.Project01
 
             // // Position the obstacles around the level
             // PositionObstacles();
+
+            // Spawn Dog
+            _dog = Instantiate(_dogPrefab, _levelContainer);
+            _dog.transform.position = _safeZone.transform.position -(_safeZone.transform.position.normalized * 5f);
+            _dog.transform.forward = -_safeZone.transform.position;
         }
 
         /// <summary>
@@ -168,7 +175,7 @@ namespace GDD3400.Project01
                     );
 
                     // Check distance from the safe zone
-                    if (Vector3.Distance(position, _safeZone.transform.position) < 12.5f)
+                    if (Vector3.Distance(position, _safeZone.transform.position) < 15)
                     {
                         continue; // Too close to the safe zone, try another position
                     }
@@ -274,14 +281,17 @@ namespace GDD3400.Project01
         {
             _levelTimer -= Time.deltaTime;
 
+            if (_levelComplete) return;
+
             if (_levelTimer <= 0f)
             {
-                Debug.Log("Level timer expired");
                 foreach (var sheep in _sheep)
                 {
                     sheep.IsActive = false;
                 }
-                _dog.IsActive = false;
+                if (_dog != null) _dog.IsActive = false;
+
+                _levelComplete = true;
             }
 
             UpdateUI();
@@ -290,6 +300,8 @@ namespace GDD3400.Project01
         public void SheepEnteredSafeZone(Sheep sheep)
         {
             Debug.Log("Sheep entered safe zone: " + sheep.name);
+
+            _dog.SaveSheep(int.Parse(sheep.name.Split(' ')[1]));
 
             StartCoroutine(FlagSheepAsSafe(sheep));
         }

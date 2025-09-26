@@ -96,6 +96,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2471741539017510992}
   - component: {fileID: 4807236908242575682}
+  - component: {fileID: 9054164686512873683}
   m_Layer: 6
   m_Name: Dog
   m_TagString: Untagged
@@ -132,15 +133,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37e48f9857b3b40268cc78ef25ba5c9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetsLayer:
+  _collTag: {fileID: 6780612567731667190}
+--- !u!54 &9054164686512873683
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4138906190388369890}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  obstaclesLayer:
+  m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  friendTag: Friend
-  threatTag: Thread
-  safeZoneTag: SafeZone
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 84
+  m_CollisionDetection: 0
 --- !u!1 &4259236394591651595
 GameObject:
   m_ObjectHideFlags: 0

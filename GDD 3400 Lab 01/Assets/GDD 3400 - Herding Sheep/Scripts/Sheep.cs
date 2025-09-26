@@ -36,12 +36,12 @@ namespace GDD3400.Project01
         [NonSerialized] private float _stoppingDistance = 1.5f;
         [NonSerialized] private float _flockingDistance = 3.5f;
         [NonSerialized] private float _wanderSpeed = .5f;
-        [NonSerialized] private float _walkSpeed = 2f;
-        [NonSerialized] private float _runSpeed = 4f;
+        [NonSerialized] private float _walkSpeed = 2.5f;
+        [NonSerialized] private float _runSpeed = 5f;
         [NonSerialized] private float _turnRate = 5f;
 
         // Perception Settings
-        [NonSerialized] private float _sightRadius = 10f;
+        [NonSerialized] private float _sightRadius = 7.5f;
 
         // Dynamic Movement Variables
         private Vector3 _velocity;
@@ -53,8 +53,6 @@ namespace GDD3400.Project01
         private Collider _threatTarget;
         private Collider _safeZoneTarget;
         private List<Collider> _friendTargets = new List<Collider>();
-
-
 
         public void Awake()
         {
@@ -71,7 +69,7 @@ namespace GDD3400.Project01
             this._level = level;
 
             // Randomize the sheep's forward direction
-            //transform.forward = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
+            transform.forward = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f));
         }
 
         public void Start()
@@ -81,6 +79,8 @@ namespace GDD3400.Project01
             {
                 _level = Level.Instance;
             }
+
+            transform.forward = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0, UnityEngine.Random.Range(-1f, 1f));
         }
 
         private void Update()
@@ -126,13 +126,25 @@ namespace GDD3400.Project01
         private void DecisionMaking()
         {
             CalculateMoveTarget();
-
-            //ApplyWallAvoidance();
         }
 
         public void CalculateMoveTarget()
         {
             _floatingTarget = Vector3.Lerp(_floatingTarget, _target, Time.deltaTime * 10f);
+
+            // First calculate the centroid of the friends, this is useful for both flocking and fleeing
+            Vector3 centroid = Vector3.zero;
+
+            // Calculate the centroid of all friend targets
+            if (_friendTargets.Count > 0)
+            {
+                foreach (var friend in _friendTargets)
+                {
+                    centroid += friend.transform.position;
+                }
+
+                centroid /= _friendTargets.Count;
+            }
 
             // Primary Behavior: Check if the sheep can see the safe zone, if so head towards it at a run
             if (_safeZoneTarget != null)
@@ -146,35 +158,41 @@ namespace GDD3400.Project01
             if (_threatTarget != null)
             {
                 _target = this.transform.position + (this.transform.position - _threatTarget.transform.position).normalized * 5f;
-                _targetSpeed = Mathf.Lerp(_runSpeed, _wanderSpeed, Vector3.Distance(transform.position, _threatTarget.transform.position)/ (_sightRadius + 2.5f));
+                float normalizedDistance = Vector3.Distance(transform.position, _threatTarget.transform.position)/_sightRadius;
+                _targetSpeed = Mathf.Lerp(_wanderSpeed, _runSpeed, normalizedDistance + 0.25f);
+
+                // If we're fleeing, we also want to weight our target slightly towards the centroid, this keeps the flock a little together
+                _target = Vector3.Lerp(_target, centroid, 0.5f);
+
                 return;
             }
 
             // Default to walk speed
             _targetSpeed = _walkSpeed;
-            
-            Vector3 centroid = Vector3.zero;
 
-            // Calculate the centroid of all friend targets
-            if (_friendTargets.Count > 0)
+            // HACK!!! Check if the the sheep can see the dog, and it it's tag as friendly, if so head towards it at a walk
+            foreach (var friend in _friendTargets)
             {
-                foreach (var friend in _friendTargets)
+                if (friend.GetComponentInParent<Dog>() != null)
                 {
-                    centroid += friend.transform.position;
+                    _target = friend.transform.position;
+                    _targetSpeed = _walkSpeed;
+                    return;
                 }
-                centroid /= _friendTargets.Count;
             }
 
             // If the centroid is outside the flocking distance, we are not in the flock, move towards the centroid
             if (Vector3.Distance(transform.position, centroid) > _flockingDistance)
             {
                 _target = centroid;
-                _targetSpeed = Mathf.Lerp(_runSpeed, 0f, Vector3.Distance(transform.position, centroid)/ (_flockingDistance + 5f));
+                _targetSpeed = _walkSpeed;
                 return;
             }
 
+            _target = transform.position;
+
             // Bring the velocity down if not doing anything
-            _velocity *= 0.95f;
+            _velocity *= 0.9f;
         }
 
         #endregion
