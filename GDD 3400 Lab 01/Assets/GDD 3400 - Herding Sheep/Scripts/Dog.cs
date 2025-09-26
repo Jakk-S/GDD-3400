@@ -88,6 +88,7 @@ namespace GDD3400.Project01
 
         private void Perception()
         {
+            // Copied from Sheep
             int t = Physics.OverlapSphereNonAlloc(transform.position, _sightRadius, _tmpTargets, _targetsLayer);
             for (int i = 0; i < t; i++)
             {
@@ -181,6 +182,7 @@ namespace GDD3400.Project01
             float speed = _maxSpeed;
             if (!_toStart) speed *= .575f;
 
+            // Copied from Sheep
             // Calculate the direction to the target position
             Vector3 direction = (targetPos - transform.position).normalized;
 
