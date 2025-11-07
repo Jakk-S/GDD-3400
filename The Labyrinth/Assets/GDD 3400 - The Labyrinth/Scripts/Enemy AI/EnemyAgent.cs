@@ -40,6 +40,8 @@ namespace GDD3400.Labyrinth
         private Vector3 _floatingTarget;
         private Vector3 _destinationTarget;
         List<PathNode> _path;
+
+        // Used for Wander and Chase states
         private GameObject _player;
         private bool _playerSeen = false, _followingPath = false;
         private float _seenTimer = 0f;
@@ -87,6 +89,7 @@ namespace GDD3400.Labyrinth
             Vector3 rayDir = transform.forward;
             RaycastHit hit;
 
+            // SphereCast line of sight searching for player
             if (Physics.SphereCast(rayOrigin, .5f,  rayDir, out hit, _SightDistance, ~_wallLayer))
             {
                 if (hit.collider.gameObject.CompareTag("Player"))
@@ -111,21 +114,17 @@ namespace GDD3400.Labyrinth
 
         private void DecisionMaking()
         {
+            // Sees if the agent is chasing the player currently or not
             if (currState == EnemyStates.Chase) { SetDestinationTarget(_player.transform.position); }
             if (currState == EnemyStates.Wander && !_followingPath)
             {
+                // Randomly chooses a node to target to wander around
                 int randomIndex = Random.Range(0, _levelManager.transform.childCount);
-
                 Transform randomChildTransform = _levelManager.transform.GetChild(randomIndex);
-
                 randomChildTransform = randomChildTransform.GetChild(2);
-
                 randomIndex = Random.Range(0, randomChildTransform.childCount);
-
                 randomChildTransform = randomChildTransform.GetChild(randomIndex);
-
                 SetDestinationTarget(randomChildTransform.position);
-
                 _followingPath = true;
             }
 
@@ -227,6 +226,7 @@ namespace GDD3400.Labyrinth
                 _velocity *= .95f;
             }
 
+            // If the agent reaches the destination, changes bool to target new random location
             if (Vector3.Distance(transform.position, _floatingTarget) <= .5f)
             {
                 _followingPath = false;
