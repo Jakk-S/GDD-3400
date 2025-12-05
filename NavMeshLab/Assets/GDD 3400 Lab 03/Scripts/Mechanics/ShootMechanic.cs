@@ -10,6 +10,12 @@ public class ShootMechanic : MonoBehaviour
     [SerializeField] Transform _ShootPoint; // This is the point where the bullet will spawn
     public Transform ShootPoint => _ShootPoint;
 
+    public float _MinimumShootRange = 4f; // The minimum range at which the shoot can be performed
+    public float _MaximumShootRange = 10f; // The maximum range at which the shoot can be performed
+
+    [Header("Shoot Accuracy")]
+    [SerializeField] float _ShootAccuracy = 0.1f; // The accuracy of the shoot, this is the random offset added to the aim target point
+
     [Header("Projectile Settings")]
     [SerializeField] Projectile _ProjectilePrefab; // This is the projectile prefab that will be spawned
 
@@ -48,10 +54,20 @@ public class ShootMechanic : MonoBehaviour
 
 
     // Perform the shoot action
-    public void PerformShoot()
+    public void PerformShoot(Vector3 targetPoint)
     {
         // Check if we're on cooldown from our last shot
         if (_ShootCooldown != null) return;
+
+        // Check if the target point is within the minimum and maximum shoot range
+        float distanceToTarget = Vector3.Distance(this.transform.position, targetPoint);
+        if (distanceToTarget < _MinimumShootRange || distanceToTarget > _MaximumShootRange) return;
+
+        // Set the aim target point
+        _aimTargetPoint = targetPoint;
+
+        // Add a random offset to the aim target point to add some accuracy variation
+        _aimTargetPoint += Random.insideUnitSphere * _ShootAccuracy;
 
         // Set the shoot animation to true so we can enter the shoot animation state
         animator.SetBool("Shoot", true);
@@ -88,5 +104,10 @@ public class ShootMechanic : MonoBehaviour
         // Spawn the projectile at the shoot point and initialize it with the shooting direction and parent tag
         Projectile projectile = Instantiate(_ProjectilePrefab, _ShootPoint.position, Quaternion.identity).GetComponent<Projectile>();
         projectile.InitializeProjectile(_aimTargetPoint - _ShootPoint.position, this.gameObject.tag);
+    }
+
+    public bool CheckCanShoot()
+    {
+        return _ShootCooldown == null;
     }
 }

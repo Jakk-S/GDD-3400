@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour
     private void PerformShoot()
     {
         // Perform the shoot action
-        _ShootMechanic.PerformShoot();
+        _ShootMechanic.PerformShoot(_ShootMechanic.AimTargetPoint);
 
         // Look at the aim target, this helps make the character look more natural when shooting
         this.transform.LookAt(_ThirdPersonAim.AimTarget);

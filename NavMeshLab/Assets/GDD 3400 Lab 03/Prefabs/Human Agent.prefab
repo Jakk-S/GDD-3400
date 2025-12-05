@@ -1,5 +1,60 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &53668865032746880
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7524616200727055466}
+  - component: {fileID: 3957376829534332520}
+  m_Layer: 0
+  m_Name: Body Collision
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7524616200727055466
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53668865032746880}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6966093360510283082}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &3957376829534332520
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 53668865032746880}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.25
+  m_Height: 1.2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!1 &83512489359384335
 GameObject:
   m_ObjectHideFlags: 0
@@ -628,6 +683,7 @@ GameObject:
   - component: {fileID: 6518093007599864695}
   - component: {fileID: 6242437577654523475}
   - component: {fileID: 6030155606504477309}
+  - component: {fileID: 2140738064323433969}
   m_Layer: 0
   m_Name: Human Agent
   m_TagString: Enemy
@@ -651,6 +707,8 @@ Transform:
   - {fileID: 5388573058621817718}
   - {fileID: 249082250563479191}
   - {fileID: 439535922091260903}
+  - {fileID: 7524616200727055466}
+  - {fileID: 2595726059950968791}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!114 &6312771823345114453
@@ -665,6 +723,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a359116e10c04bedaa1cd1798389667, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _Health: 100
+  _ReNavigateInterval: 0.5
+  _PatrolSpeed: 2
+  _PatrolPoints: []
+  _IdleAtPatrolPointTime: 2
+  _ChaseSpeed: 5
+  _PreferredDistance: 8
+  _DistanceTolerance: 2
+  _TimeToRememberPlayer: 3
+  _AttackOnSight: 1
 --- !u!114 &9071160261463688251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -689,6 +757,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc11d95446a5b46e18048a9a089314b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _ReNavigateInterval: 1
 --- !u!114 &6518093007599864695
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -703,6 +772,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _Cooldown: 0.25
   _ShootPoint: {fileID: 383682866656050256}
+  _MinimumShootRange: 4
+  _MaximumShootRange: 10
+  _ShootAccuracy: 0.1
   _ProjectilePrefab: {fileID: 7849582968535974138, guid: 5a71895fd1928486b8e6e8927eac9868, type: 3}
 --- !u!95 &6242437577654523475
 Animator:
@@ -717,7 +789,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 822d02ce9b7b84983af9a47ccc707160, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -736,18 +808,36 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3.5
-  m_Acceleration: 8
+  m_Speed: 2
+  m_Acceleration: 4
   avoidancePriority: 50
-  m_AngularSpeed: 120
+  m_AngularSpeed: 180
   m_StoppingDistance: 0
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
   m_Height: 2
-  m_BaseOffset: 0
+  m_BaseOffset: -0.025
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &2140738064323433969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2360660713116545497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2b82448cc0794c2eab28413c49c9c39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _DrawDebugLines: 1
+  _DrawDebugCone: 1
+  _HeadPoint: {fileID: 7139083958036643707}
+  _VisionUpdateInterval: 0.1
+  _VisionRange: 10
+  _VisionConeAngle: 120
 --- !u!1 &2368693961306077278
 GameObject:
   m_ObjectHideFlags: 0
@@ -2147,6 +2237,61 @@ Transform:
   - {fileID: 4395675764256831948}
   m_Father: {fileID: 5315990938775193519}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7518535721144625691
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2595726059950968791}
+  - component: {fileID: 1747395070988301921}
+  m_Layer: 0
+  m_Name: Head Collision
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2595726059950968791
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7518535721144625691}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6966093360510283082}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &1747395070988301921
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7518535721144625691}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.1
+  m_Height: 0.3
+  m_Direction: 1
+  m_Center: {x: 0, y: 1.65, z: 0}
 --- !u!1 &7528259340450318469
 GameObject:
   m_ObjectHideFlags: 0
