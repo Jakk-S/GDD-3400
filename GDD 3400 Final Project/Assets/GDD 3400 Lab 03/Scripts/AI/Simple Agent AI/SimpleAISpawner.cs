@@ -1,13 +1,12 @@
 using UnityEngine;
 
-public class AISpawner : MonoBehaviour
+public class SimpleAISpawner : MonoBehaviour
 {
     [SerializeField] float _SpawnRadius = 8;
     [SerializeField] int _InitialSpawnCount = 10;
     [SerializeField] float _SpawnInterval = 1f;
     [SerializeField] GameObject _AIPrefab;
-    [SerializeField] GameObject _BrutePrefab;
-    [SerializeField] int _BruteChance = 2;
+
 
     float _timeSinceLastSpawn = 0f;
 
@@ -35,10 +34,7 @@ public class AISpawner : MonoBehaviour
     public void SpawnAI()
     {
         Vector3 spawnPosition = transform.position + new Vector3(Random.Range(-_SpawnRadius, _SpawnRadius), 0, Random.Range(-_SpawnRadius, _SpawnRadius));
-        if ((int)Random.Range(1, 11) <= _BruteChance)
-            Instantiate(_BrutePrefab, spawnPosition, Quaternion.identity);
-        else
-            Instantiate(_AIPrefab, spawnPosition, Quaternion.identity);
+        Instantiate(_AIPrefab, spawnPosition, Quaternion.identity);
     }
 
     //Draw gizmos to visualize the spawn radius

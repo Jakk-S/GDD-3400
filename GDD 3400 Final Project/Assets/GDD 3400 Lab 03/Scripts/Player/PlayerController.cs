@@ -1,11 +1,18 @@
 using UnityEngine;
 using Cinemachine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] Cinemachine3rdPersonAim _ThirdPersonAim;
     [SerializeField] ShootMechanic _ShootMechanic;
+    [SerializeField] int _Health;
+
+    [SerializeField] Slider _HealthSlider;
+    [SerializeField] TextMeshProUGUI _HealthText;
 
     public void Awake()
     {
@@ -33,8 +40,22 @@ public class PlayerController : MonoBehaviour
         this.transform.rotation = Quaternion.Euler(0, this.transform.rotation.eulerAngles.y, 0);
     }
 
+    public void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Enemy"))
+            TakeDamage(collision.gameObject.GetComponent<SimpleAIController>()._Damage);
+        Debug.Log("colliding");
+    }
+
     public void TakeDamage(int damage)
     {
+        _Health -= damage;
         Debug.Log("Player took damage: " + damage);
+        if(_Health <= 0)
+        {
+            SceneManager.LoadScene("GameOver");
+        }
+        _HealthSlider.value = _Health;
+        _HealthText.text = $"Health: {_Health} / 100";
     }
 }
